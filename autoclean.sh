@@ -2,12 +2,6 @@
 
 chmod 755 $0 autogen.sh config.guess config.rpath config.status config.sub configure depcomp install-sh missing
 
-make -C palmos distclean
-rm -rf palmos/Debug/
-rm -rf palmos/Device/
-rm -f palmos/.dependencies*
-rm -f src/sections.h
-
 make clean
 make distclean
 

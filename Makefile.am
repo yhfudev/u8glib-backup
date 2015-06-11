@@ -45,17 +45,47 @@ EXT_FLAGS+= -DSVN_VERSION='"${GITNUMTMP}"'
 DEFS+=$(EXT_FLAGS)
 
 SRC_BASE= \
+    csrc/u8g_page.c \
+    csrc/u8g_u16toa.c \
+    csrc/u8g_u8toa.c \
     sfntsrc/u8g_font_data.c \
     sys/pbm/dev/u8g_dev_pbm.c \
     sys/pbm/dev/u8g_dev_pbm_gr_h2.c \
     sys/pbm/dev/u8g_dev_pbm_h.c \
     $(NULL)
 
-SRC_COMMON= \
-    csrc/chessengine.c \
+SRC_COMMON_ALG= \
     csrc/u8g_bitmap.c \
     csrc/u8g_circle.c \
     csrc/u8g_clip.c \
+    csrc/u8g_cursor.c \
+    csrc/u8g_ellipse.c \
+    csrc/u8g_font.c \
+    csrc/u8g_line.c \
+    csrc/u8g_pb14v1.c \
+    csrc/u8g_pb16h1.c \
+    csrc/u8g_pb16h2.c \
+    csrc/u8g_pb16v1.c \
+    csrc/u8g_pb16v2.c \
+    csrc/u8g_pb32h1.c \
+    csrc/u8g_pb8h1.c \
+    csrc/u8g_pb8h1f.c \
+    csrc/u8g_pb8h2.c \
+    csrc/u8g_pb8h8.c \
+    csrc/u8g_pb8v1.c \
+    csrc/u8g_pb8v2.c \
+    csrc/u8g_pb.c \
+    csrc/u8g_pbxh16.c \
+    csrc/u8g_pbxh24.c \
+    csrc/u8g_polygon.c \
+    csrc/u8g_rect.c \
+    csrc/u8g_rot.c \
+    csrc/u8g_scale.c \
+    csrc/u8g_virtual_screen.c \
+    $(NULL)
+
+SRC_COMMON_DRV= \
+    csrc/chessengine.c \
     csrc/u8g_com_api_16gr.c \
     csrc/u8g_com_api.c \
     csrc/u8g_com_arduino_attiny85_hw_spi.c \
@@ -84,7 +114,6 @@ SRC_COMMON= \
     csrc/u8g_com_msp430_hw_spi.c \
     csrc/u8g_com_null.c \
     csrc/u8g_com_std_sw_spi.c \
-    csrc/u8g_cursor.c \
     csrc/u8g_delay.c \
     csrc/u8g_dev_a2_micro_printer.c \
     csrc/u8g_dev_flipdisc_2x7.c \
@@ -137,47 +166,23 @@ SRC_COMMON= \
     csrc/u8g_dev_uc1611_dogxl240.c \
     csrc/u8g_dev_uc1701_dogs102.c \
     csrc/u8g_dev_uc1701_mini12864.c \
-    csrc/u8g_ellipse.c \
-    csrc/u8g_font.c \
-    csrc/u8g_line.c \
     csrc/u8g_ll_api.c \
-    csrc/u8g_page.c \
-    csrc/u8g_pb14v1.c \
-    csrc/u8g_pb16h1.c \
-    csrc/u8g_pb16h2.c \
-    csrc/u8g_pb16v1.c \
-    csrc/u8g_pb16v2.c \
-    csrc/u8g_pb32h1.c \
-    csrc/u8g_pb8h1.c \
-    csrc/u8g_pb8h1f.c \
-    csrc/u8g_pb8h2.c \
-    csrc/u8g_pb8h8.c \
-    csrc/u8g_pb8v1.c \
-    csrc/u8g_pb8v2.c \
-    csrc/u8g_pb.c \
-    csrc/u8g_pbxh16.c \
-    csrc/u8g_pbxh24.c \
-    csrc/u8g_polygon.c \
-    csrc/u8g_rect.c \
-    csrc/u8g_rot.c \
-    csrc/u8g_scale.c \
     csrc/u8g_state.c \
-    csrc/u8g_u16toa.c \
-    csrc/u8g_u8toa.c \
-    csrc/u8g_virtual_screen.c \
     dogmsrc/u8g_dogm128_api.c \
     dogmsrc/spacetrash.c \
     cppsrc/U8glib.cpp \
     $(NULL)
 
 SRC_WPI= \
-    $(SRC_COMMON) \
+    $(SRC_COMMON_ALG) \
+    $(SRC_COMMON_DRV) \
     csrc/u8g_com_raspberrypi_hw_spi.c \
     csrc/u8g_com_raspberrypi_ssd_i2c.c \
     $(NULL)
 
 SRC_SDL= \
-    $(SRC_COMMON) \
+    $(SRC_COMMON_ALG) \
+    $(SRC_COMMON_DRV) \
     sys/sdl/dev/u8g_dev_sdl.c \
     $(NULL)
 
@@ -236,7 +241,7 @@ noinst_PROGRAMS=$(BIN_WPI)
 
 u8gsdl_clip_SOURCES=sys/pbm/cliptest/main.c
 u8gsdl_clip_CFLAGS=$(libu8gsdl_la_CFLAGS)
-u8gsdl_clip_LDFLAGS=-lu8gbase $(libu8gsdl_la_LDFLAGS)
+u8gsdl_clip_LDFLAGS=-lu8gbase -lu8gsdl $(libu8gsdl_la_LDFLAGS)
 
 u8gsdl_2bit_SOURCES=sys/sdl/2bit/main.c
 u8gsdl_2bit_CFLAGS=$(libu8gsdl_la_CFLAGS)

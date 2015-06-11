@@ -135,6 +135,8 @@
 //U8GLIB_SSD1351_128X128GH_332 u8g(8, 9, 7); // Arduino, HW SPI Com: SCK = 76, MOSI = 75, CS = 8, A0 = 9, RESET = 7 (Freetronics OLED)
 //U8GLIB_SSD1351_128X128GH_HICOLOR u8g(8, 9, 7); // Arduino, HW SPI Com: SCK = 76, MOSI = 75, CS = 8, A0 = 9, RESET = 7 (Freetronics OLED)
 
+U8GLIB_SSD1306_128X32 u8g(13, 11, 10, 9);	// SW SPI Com: SCK = 13, MOSI = 11, CS = 10, A0 = 9
+
 
 // DOGS102 shield configuration values
 uint8_t uiKeyPrev = 2;
@@ -156,7 +158,7 @@ uint8_t uiKeyCode = CHESS_KEY_NONE;
 
 void uiSetup(void) {
   // configure input keys 
-  
+#if defined(ARDUINO)
   pinMode(uiKeyPrev, INPUT);           // set pin to input
   digitalWrite(uiKeyPrev, HIGH);       // turn on pullup resistors
   pinMode(uiKeyNext, INPUT);           // set pin to input
@@ -165,11 +167,13 @@ void uiSetup(void) {
   digitalWrite(uiKeySelect, HIGH);       // turn on pullup resistors
   pinMode(uiKeyBack, INPUT);           // set pin to input
   digitalWrite(uiKeyBack, HIGH);       // turn on pullup resistors
+#endif
 }
 
 void uiStep(void)
 {
   uiKeyCodeSecond = uiKeyCodeFirst;
+#if defined(ARDUINO)
   if ( digitalRead(uiKeyPrev) == LOW )
     uiKeyCodeFirst = CHESS_KEY_PREV;
   else if ( digitalRead(uiKeyNext) == LOW )
@@ -178,9 +182,10 @@ void uiStep(void)
     uiKeyCodeFirst = CHESS_KEY_SELECT;
   else if ( digitalRead(uiKeyBack) == LOW )
     uiKeyCodeFirst = CHESS_KEY_BACK;
-  else 
+  else
+#endif
     uiKeyCodeFirst = CHESS_KEY_NONE;
-  
+
   if ( uiKeyCodeSecond == uiKeyCodeFirst )
     uiKeyCode = uiKeyCodeFirst;
   else

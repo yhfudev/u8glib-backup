@@ -46,6 +46,9 @@ DEFS+=$(EXT_FLAGS)
 
 SRC_BASE= \
     sfntsrc/u8g_font_data.c \
+    sys/pbm/dev/u8g_dev_pbm.c \
+    sys/pbm/dev/u8g_dev_pbm_gr_h2.c \
+    sys/pbm/dev/u8g_dev_pbm_h.c \
     $(NULL)
 
 SRC_COMMON= \
@@ -211,8 +214,13 @@ libu8gwpi_la_CPPFLAGS=$(libu8gwpi_la_CFLAGS)
 libu8gwpi_la_LDFLAGS=-lwiringPi
 libu8gwpi_la_LIBADD=$(top_builddir)/libu8gbase.la
 
-
-BIN_SDL=u8gsdl_2bit u8gsdl_8bit u8gsdl_chess u8gsdl_circle u8gsdl_helloworldpp u8gsdl_cursor u8gsdl_fonttop u8gsdl_fullcolor u8gsdl_gabc u8gsdl_gah u8gsdl_greek u8gsdl_helloworld u8gsdl_hicolor u8gsdl_logo u8gsdl_menu u8gsdl_polygon u8gsdl_spacetrash u8gsdl_xbm
+BIN_SDL= \
+    u8gsdl_2bit u8gsdl_8bit u8gsdl_circle u8gsdl_helloworldpp \
+    u8gsdl_cursor u8gsdl_fonttop u8gsdl_fullcolor u8gsdl_gabc u8gsdl_gah u8gsdl_greek \
+    u8gsdl_helloworld u8gsdl_hicolor u8gsdl_logo u8gsdl_menu u8gsdl_polygon u8gsdl_xbm \
+    u8gsdl_chess u8gsdl_spacetrash \
+    u8gsdl_clip \
+    $(NULL)
 
 BIN_WPI=u8gwpi_chess u8gwpi_chessdogm u8gwpi_gtest u8gwpi_logo u8gwpi_spacetrash
 
@@ -225,6 +233,10 @@ test:
 
 bin_PROGRAMS=$(BIN_TOOLS) $(BIN_SDL)
 noinst_PROGRAMS=$(BIN_WPI)
+
+u8gsdl_clip_SOURCES=sys/pbm/cliptest/main.c
+u8gsdl_clip_CFLAGS=$(libu8gsdl_la_CFLAGS)
+u8gsdl_clip_LDFLAGS=-lu8gbase $(libu8gsdl_la_LDFLAGS)
 
 u8gsdl_2bit_SOURCES=sys/sdl/2bit/main.c
 u8gsdl_2bit_CFLAGS=$(libu8gsdl_la_CFLAGS)

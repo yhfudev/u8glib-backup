@@ -45,6 +45,10 @@ EXT_FLAGS+= -DSVN_VERSION='"${GITNUMTMP}"'
 DEFS+=$(EXT_FLAGS)
 
 SRC_BASE= \
+    sfntsrc/u8g_font_data.c \
+    $(NULL)
+
+SRC_COMMON= \
     csrc/chessengine.c \
     csrc/u8g_bitmap.c \
     csrc/u8g_circle.c \
@@ -72,6 +76,8 @@ SRC_BASE= \
     csrc/u8g_com_atmega_st7920_hw_spi.c \
     csrc/u8g_com_atmega_st7920_spi.c \
     csrc/u8g_com_atmega_sw_spi.c \
+    csrc/u8g_com_i2c.c \
+    csrc/u8g_com_io.c \
     csrc/u8g_com_msp430_hw_spi.c \
     csrc/u8g_com_null.c \
     csrc/u8g_com_std_sw_spi.c \
@@ -131,6 +137,7 @@ SRC_BASE= \
     csrc/u8g_ellipse.c \
     csrc/u8g_font.c \
     csrc/u8g_line.c \
+    csrc/u8g_ll_api.c \
     csrc/u8g_page.c \
     csrc/u8g_pb14v1.c \
     csrc/u8g_pb16h1.c \
@@ -155,26 +162,19 @@ SRC_BASE= \
     csrc/u8g_u16toa.c \
     csrc/u8g_u8toa.c \
     csrc/u8g_virtual_screen.c \
-    sfntsrc/u8g_font_data.c \
+    dogmsrc/u8g_dogm128_api.c \
     dogmsrc/spacetrash.c \
+    cppsrc/U8glib.cpp \
     $(NULL)
 
 SRC_WPI= \
-    csrc/u8g_com_i2c.c \
-    csrc/u8g_com_io.c \
+    $(SRC_COMMON) \
     csrc/u8g_com_raspberrypi_hw_spi.c \
     csrc/u8g_com_raspberrypi_ssd_i2c.c \
-    csrc/u8g_ll_api.c \
-    dogmsrc/u8g_dogm128_api.c \
-    cppsrc/U8glib.cpp \
     $(NULL)
 
 SRC_SDL= \
-    csrc/u8g_com_i2c.c \
-    csrc/u8g_com_io.c \
-    csrc/u8g_ll_api.c \
-    dogmsrc/u8g_dogm128_api.c \
-    cppsrc/U8glib.cpp \
+    $(SRC_COMMON) \
     sys/sdl/dev/u8g_dev_sdl.c \
     $(NULL)
 
@@ -203,11 +203,13 @@ libu8gbase_la_LDFLAGS=
 
 libu8gsdl_la_CFLAGS=-Icsrc -Icppsrc -Inonarduino -DU8G_16BIT `sdl-config --cflags`
 libu8gsdl_la_CPPFLAGS=$(libu8gsdl_la_CFLAGS)
-libu8gsdl_la_LDFLAGS=$(top_builddir)/libu8gbase.la `sdl-config --libs`
+libu8gsdl_la_LDFLAGS=`sdl-config --libs`
+libu8gsdl_la_LIBADD=$(top_builddir)/libu8gbase.la
 
 libu8gwpi_la_CFLAGS=-Icsrc -Icppsrc -Inonarduino -DU8G_16BIT -DU8G_RASPBERRY_PI -DU8G_WITH_PINLIST
 libu8gwpi_la_CPPFLAGS=$(libu8gwpi_la_CFLAGS)
-libu8gwpi_la_LDFLAGS=$(top_builddir)/libu8gbase.la -lwiringPi
+libu8gwpi_la_LDFLAGS=-lwiringPi
+libu8gwpi_la_LIBADD=$(top_builddir)/libu8gbase.la
 
 
 BIN_SDL=u8gsdl_2bit u8gsdl_8bit u8gsdl_chess u8gsdl_circle u8gsdl_helloworldpp u8gsdl_cursor u8gsdl_fonttop u8gsdl_fullcolor u8gsdl_gabc u8gsdl_gah u8gsdl_greek u8gsdl_helloworld u8gsdl_hicolor u8gsdl_logo u8gsdl_menu u8gsdl_polygon u8gsdl_spacetrash u8gsdl_xbm
@@ -226,75 +228,75 @@ noinst_PROGRAMS=$(BIN_WPI)
 
 u8gsdl_2bit_SOURCES=sys/sdl/2bit/main.c
 u8gsdl_2bit_CFLAGS=$(libu8gsdl_la_CFLAGS)
-u8gsdl_2bit_LDFLAGS=-lu8gsdl $(libu8gsdl_la_LDFLAGS)
+u8gsdl_2bit_LDFLAGS=-lu8gbase -lu8gsdl $(libu8gsdl_la_LDFLAGS)
 
 u8gsdl_8bit_SOURCES=sys/sdl/8bit/main.c
 u8gsdl_8bit_CFLAGS=$(libu8gsdl_la_CFLAGS)
-u8gsdl_8bit_LDFLAGS=-lu8gsdl $(libu8gsdl_la_LDFLAGS)
+u8gsdl_8bit_LDFLAGS=-lu8gbase -lu8gsdl $(libu8gsdl_la_LDFLAGS)
 
 u8gsdl_chess_SOURCES=sys/sdl/chess/main.c
 u8gsdl_chess_CFLAGS=$(libu8gsdl_la_CFLAGS)
-u8gsdl_chess_LDFLAGS=-lu8gsdl $(libu8gsdl_la_LDFLAGS)
+u8gsdl_chess_LDFLAGS=-lu8gbase -lu8gsdl $(libu8gsdl_la_LDFLAGS)
 
 u8gsdl_circle_SOURCES=sys/sdl/circle/main.c
 u8gsdl_circle_CPPFLAGS=$(libu8gsdl_la_CFLAGS)
-u8gsdl_circle_LDFLAGS=-lu8gsdl $(libu8gsdl_la_LDFLAGS)
+u8gsdl_circle_LDFLAGS=-lu8gbase -lu8gsdl $(libu8gsdl_la_LDFLAGS)
 
 u8gsdl_helloworldpp_SOURCES=sys/sdl/cpp_helloworld/main.cpp
 u8gsdl_helloworldpp_CPPFLAGS=$(libu8gsdl_la_CFLAGS)
-u8gsdl_helloworldpp_LDFLAGS=-lu8gsdl $(libu8gsdl_la_LDFLAGS)
+u8gsdl_helloworldpp_LDFLAGS=-lu8gbase -lu8gsdl $(libu8gsdl_la_LDFLAGS)
 
 u8gsdl_cursor_SOURCES=sys/sdl/cursor/main.c
 u8gsdl_cursor_CPPFLAGS=$(libu8gsdl_la_CFLAGS)
-u8gsdl_cursor_LDFLAGS=-lu8gsdl $(libu8gsdl_la_LDFLAGS)
+u8gsdl_cursor_LDFLAGS=-lu8gbase -lu8gsdl $(libu8gsdl_la_LDFLAGS)
 
 u8gsdl_fonttop_SOURCES=sys/sdl/FontPosTop/main.c
 u8gsdl_fonttop_CPPFLAGS=$(libu8gsdl_la_CFLAGS)
-u8gsdl_fonttop_LDFLAGS=-lu8gsdl $(libu8gsdl_la_LDFLAGS)
+u8gsdl_fonttop_LDFLAGS=-lu8gbase -lu8gsdl $(libu8gsdl_la_LDFLAGS)
 
 u8gsdl_fullcolor_SOURCES=sys/sdl/fullcolor/main.c
 u8gsdl_fullcolor_CPPFLAGS=$(libu8gsdl_la_CFLAGS)
-u8gsdl_fullcolor_LDFLAGS=-lu8gsdl $(libu8gsdl_la_LDFLAGS)
+u8gsdl_fullcolor_LDFLAGS=-lu8gbase -lu8gsdl $(libu8gsdl_la_LDFLAGS)
 
 u8gsdl_gabc_SOURCES=sys/sdl/gabc/main.c
 u8gsdl_gabc_CPPFLAGS=$(libu8gsdl_la_CFLAGS)
-u8gsdl_gabc_LDFLAGS=-lu8gsdl $(libu8gsdl_la_LDFLAGS)
+u8gsdl_gabc_LDFLAGS=-lu8gbase -lu8gsdl $(libu8gsdl_la_LDFLAGS)
 
 u8gsdl_gah_SOURCES=sys/sdl/gA_h/main.c
 u8gsdl_gah_CPPFLAGS=$(libu8gsdl_la_CFLAGS)
-u8gsdl_gah_LDFLAGS=-lu8gsdl $(libu8gsdl_la_LDFLAGS)
+u8gsdl_gah_LDFLAGS=-lu8gbase -lu8gsdl $(libu8gsdl_la_LDFLAGS)
 
 u8gsdl_greek_SOURCES=sys/sdl/greek/main.c
 u8gsdl_greek_CPPFLAGS=$(libu8gsdl_la_CFLAGS)
-u8gsdl_greek_LDFLAGS=-lu8gsdl $(libu8gsdl_la_LDFLAGS)
+u8gsdl_greek_LDFLAGS=-lu8gbase -lu8gsdl $(libu8gsdl_la_LDFLAGS)
 
 u8gsdl_helloworld_SOURCES=sys/sdl/helloworld/main.c
 u8gsdl_helloworld_CPPFLAGS=$(libu8gsdl_la_CFLAGS)
-u8gsdl_helloworld_LDFLAGS=-lu8gsdl $(libu8gsdl_la_LDFLAGS)
+u8gsdl_helloworld_LDFLAGS=-lu8gbase -lu8gsdl $(libu8gsdl_la_LDFLAGS)
 
 u8gsdl_hicolor_SOURCES=sys/sdl/hicolor/main.c
 u8gsdl_hicolor_CPPFLAGS=$(libu8gsdl_la_CFLAGS)
-u8gsdl_hicolor_LDFLAGS=-lu8gsdl $(libu8gsdl_la_LDFLAGS)
+u8gsdl_hicolor_LDFLAGS=-lu8gbase -lu8gsdl $(libu8gsdl_la_LDFLAGS)
 
 u8gsdl_logo_SOURCES=sys/sdl/cpp_logo/main.cpp
 u8gsdl_logo_CPPFLAGS=$(libu8gsdl_la_CFLAGS)
-u8gsdl_logo_LDFLAGS=-lu8gsdl $(libu8gsdl_la_LDFLAGS)
+u8gsdl_logo_LDFLAGS=-lu8gbase -lu8gsdl $(libu8gsdl_la_LDFLAGS)
 
 u8gsdl_menu_SOURCES=sys/sdl/menu/main.c
 u8gsdl_menu_CPPFLAGS=$(libu8gsdl_la_CFLAGS)
-u8gsdl_menu_LDFLAGS=-lu8gsdl $(libu8gsdl_la_LDFLAGS)
+u8gsdl_menu_LDFLAGS=-lu8gbase -lu8gsdl $(libu8gsdl_la_LDFLAGS)
 
 u8gsdl_polygon_SOURCES=sys/sdl/polygon/main.c
 u8gsdl_polygon_CPPFLAGS=$(libu8gsdl_la_CFLAGS)
-u8gsdl_polygon_LDFLAGS=-lu8gsdl $(libu8gsdl_la_LDFLAGS)
+u8gsdl_polygon_LDFLAGS=-lu8gbase -lu8gsdl $(libu8gsdl_la_LDFLAGS)
 
 u8gsdl_spacetrash_SOURCES=sys/sdl/spacetrash/spacemain.c
 u8gsdl_spacetrash_CPPFLAGS=$(libu8gsdl_la_CFLAGS)
-u8gsdl_spacetrash_LDFLAGS=-lu8gsdl $(libu8gsdl_la_LDFLAGS)
+u8gsdl_spacetrash_LDFLAGS=-lu8gbase -lu8gsdl $(libu8gsdl_la_LDFLAGS)
 
 u8gsdl_xbm_SOURCES=sys/sdl/xbm/main.c
 u8gsdl_xbm_CPPFLAGS=$(libu8gsdl_la_CFLAGS)
-u8gsdl_xbm_LDFLAGS=-lu8gsdl $(libu8gsdl_la_LDFLAGS)
+u8gsdl_xbm_LDFLAGS=-lu8gbase -lu8gsdl $(libu8gsdl_la_LDFLAGS)
 
 .pde.cpp:
 	cp $< $@
@@ -306,19 +308,19 @@ u8gsdl_xbm_LDFLAGS=-lu8gsdl $(libu8gsdl_la_LDFLAGS)
 u8gwpi_logo_SOURCES=nonarduino/wpimain.cpp sys/arduino/U8gLogo/U8gLogo.pde
 u8gwpi_logo_CFLAGS=$(libu8gwpi_la_CFLAGS)
 u8gwpi_logo_CPPFLAGS=$(libu8gwpi_la_CFLAGS)
-u8gwpi_logo_LDFLAGS=-lu8gwpi $(libu8gwpi_la_LDFLAGS)
+u8gwpi_logo_LDFLAGS=-lu8gbase -lu8gwpi $(libu8gwpi_la_LDFLAGS)
 
 u8gwpi_gtest_SOURCES=nonarduino/wpimain.cpp sys/arduino/GraphicsTest/GraphicsTest.pde
 u8gwpi_gtest_CPPFLAGS=$(libu8gwpi_la_CFLAGS)
-u8gwpi_gtest_LDFLAGS=-lu8gwpi $(libu8gwpi_la_LDFLAGS)
+u8gwpi_gtest_LDFLAGS=-lu8gbase -lu8gwpi $(libu8gwpi_la_LDFLAGS)
 
 u8gwpi_spacetrash_SOURCES=nonarduino/wpimain.cpp sys/arduino/SpaceTrashDogm/SpaceTrash.pde #sys/sdl/spacetrash/spacemain.c
 u8gwpi_spacetrash_CPPFLAGS=$(libu8gwpi_la_CFLAGS)
-u8gwpi_spacetrash_LDFLAGS=-lu8gwpi $(libu8gwpi_la_LDFLAGS)
+u8gwpi_spacetrash_LDFLAGS=-lu8gbase -lu8gwpi $(libu8gwpi_la_LDFLAGS)
 
 u8gwpi_chess_SOURCES=nonarduino/wpimain.cpp sys/arduino/Chess/Chess.pde
 u8gwpi_chess_CPPFLAGS=$(libu8gwpi_la_CFLAGS)
-u8gwpi_chess_LDFLAGS=-lu8gwpi $(libu8gwpi_la_LDFLAGS)
+u8gwpi_chess_LDFLAGS=-lu8gbase -lu8gwpi $(libu8gwpi_la_LDFLAGS)
 
 u8gwpi_chessdogm_SOURCES=nonarduino/wpimain.cpp sys/arduino/ChessDogm/Chess.pde
 u8gwpi_chessdogm_CPPFLAGS=$(libu8gwpi_la_CFLAGS)
